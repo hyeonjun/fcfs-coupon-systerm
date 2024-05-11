@@ -1,6 +1,7 @@
 package com.example.api.service;
 
 import com.example.api.domain.Coupon;
+import com.example.api.repository.CouponCountRepository;
 import com.example.api.repository.CouponRepository;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.Test;
@@ -15,7 +16,6 @@ import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertNotEquals;
 
 @SpringBootTest
 @Rollback(value = false)
@@ -25,18 +25,20 @@ class CouponServiceTest {
   private CouponService couponService;
   @Autowired
   private CouponRepository couponRepository;
+  @Autowired
+  private CouponCountRepository couponCountRepository;
 
   private final Logger log = LoggerFactory.getLogger(CouponServiceTest.class);
 
   @AfterEach
   void after() {
     couponRepository.deleteAll();
+    couponCountRepository.flushAll();
   }
 
   @Test
   void 한명만_응모() {
-    Coupon coupon = couponService.createCoupon(1L)
-      .orElse(null);
+    Coupon coupon = couponService.createCoupon(1L);
 
     log.info("coupon: {}", coupon);
 
@@ -70,6 +72,6 @@ class CouponServiceTest {
 
     long count = couponRepository.count();
 
-    assertNotEquals(100L, count);
+    assertEquals(100L, count);
   }
 }
