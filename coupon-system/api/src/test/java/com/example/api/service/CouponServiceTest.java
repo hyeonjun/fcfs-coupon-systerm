@@ -5,6 +5,8 @@ import com.example.api.repository.CouponCountRepository;
 import com.example.api.repository.CouponRepository;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.EnumSource;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -38,7 +40,7 @@ class CouponServiceTest {
 
   @Test
   void 한명만_응모() {
-    Coupon coupon = couponService.createCoupon(1L);
+    Coupon coupon = couponService.createCouponForRedis(1L);
 
     log.info("coupon: {}", coupon);
 
@@ -47,8 +49,9 @@ class CouponServiceTest {
     assertEquals(1L, count);
   }
 
-  @Test
-  void 동시에_1000개의_요청() throws InterruptedException {
+  @ParameterizedTest
+  @EnumSource(value = ForTestType.class, names = {"REDIS", "KAFKA"})
+  void 동시에_1000개의_요청(ForTestType type) throws InterruptedException {
     int threadCount = 1000;
     // ExecutorService: 병령 작업을 간단하게 할 수 있게 도와주는 Java API
     ExecutorService executorService = Executors.newFixedThreadPool(32);
@@ -59,7 +62,7 @@ class CouponServiceTest {
       long userId = i;
       executorService.submit(() -> {
         try {
-          couponService.createCoupon(userId);
+          execute(userId, type);
         } catch (Exception e) {
           log.error(e.getMessage());
         } finally {
@@ -74,4 +77,24 @@ class CouponServiceTest {
 
     assertEquals(100L, count);
   }
+
+  void execute(long userId, ForTestType type) {
+    switch (type) {
+      case REDIS:
+        couponService.createCouponForRedis(userId);
+        break;
+      case KAFKA:
+        couponService.createCouponForKafka(userId);
+        break;
+      default:
+        throw new RuntimeException("not supported type");
+    }
+  }
+
+
+}
+
+enum ForTestType {
+  REDIS,
+  KAFKA
 }
