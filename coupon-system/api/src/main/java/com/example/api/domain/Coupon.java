@@ -22,7 +22,7 @@ public class Coupon {
   private Long userId;
 
   @Builder
-  private Coupon(Long userId) {
+  protected Coupon(Long userId) {
     this.userId = userId;
   }
 
@@ -31,12 +31,12 @@ public class Coupon {
     if (this == o) return true;
     if (o == null || getClass() != o.getClass()) return false;
     Coupon coupon = (Coupon) o;
-    return Objects.equals(id, coupon.id);
+    return Objects.equals(getId(), coupon.getId());
   }
 
   @Override
   public int hashCode() {
-    return Objects.hash(id);
+    return Objects.hash(getId());
   }
 
   @Override
