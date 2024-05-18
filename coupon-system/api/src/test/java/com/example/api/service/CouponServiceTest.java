@@ -50,8 +50,8 @@ class CouponServiceTest {
   }
 
   @ParameterizedTest
-  @EnumSource(value = ForTestType.class, names = {"REDIS", "KAFKA"})
-  void 동시에_1000개의_요청(ForTestType type) throws InterruptedException {
+  @EnumSource(value = TestType.class, names = {"REDIS", "KAFKA"})
+  void 동시에_1000개의_요청(TestType type) throws InterruptedException {
     int threadCount = 1000;
     // ExecutorService: 병령 작업을 간단하게 할 수 있게 도와주는 Java API
     ExecutorService executorService = Executors.newFixedThreadPool(32);
@@ -73,12 +73,16 @@ class CouponServiceTest {
 
     latch.await();
 
+    // kafka consumer 가 데이터를 받아 실제 db에 저장하기까지 시간이 걸리기 때문에
+    // 넉넉하게 10초 정도 기다린 후 개수를 확인한다.
+    Thread.sleep(10000L);
+
     long count = couponRepository.count();
 
     assertEquals(100L, count);
   }
 
-  void execute(long userId, ForTestType type) {
+  void execute(long userId, TestType type) {
     switch (type) {
       case REDIS:
         couponService.createCouponForRedis(userId);
@@ -90,11 +94,9 @@ class CouponServiceTest {
         throw new RuntimeException("not supported type");
     }
   }
-
-
 }
 
-enum ForTestType {
+enum TestType {
   REDIS,
   KAFKA
 }
