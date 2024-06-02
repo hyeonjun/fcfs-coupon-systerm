@@ -1,12 +1,11 @@
 package com.example.consumer.domain;
 
-import jakarta.persistence.Entity;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.GenerationType;
-import jakarta.persistence.Id;
+import com.example.consumer.domain.code.EventStatus;
+import jakarta.persistence.*;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+import lombok.Setter;
 
 import java.util.Objects;
 
@@ -19,11 +18,22 @@ public class FailedEvent {
   @GeneratedValue(strategy = GenerationType.IDENTITY)
   private Long id;
 
+  @Column(name = "user_id", nullable = false)
   private Long userId;
+
+  @Enumerated(EnumType.STRING)
+  @Column(name = "event_status", nullable = false)
+  @Setter
+  private EventStatus eventStatus;
+
+  @Setter
+  private int retry;
 
   @Builder
   protected FailedEvent(Long userId) {
     this.userId = userId;
+    this.eventStatus = EventStatus.REGISTERED;
+    this.retry = 0;
   }
 
   @Override
