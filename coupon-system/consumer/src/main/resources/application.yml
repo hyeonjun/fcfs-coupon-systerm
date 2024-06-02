@@ -1,3 +1,6 @@
+server:
+  port: 8081
+
 spring:
   application:
     name: consumer
@@ -10,8 +13,13 @@ spring:
       hibernate:
         format_sql: true
         dialect: org.hibernate.dialect.MySQLDialect
+        jdbc:
+          batch_size: 100
+          order_inserts: true
+          order_updates: true
+
   datasource:
     driver-class-name: com.mysql.cj.jdbc.Driver
-    url: jdbc:mysql://127.0.0.1:3306/coupon_system
+    url: jdbc:mysql://127.0.0.1:3306/coupon_system?rewriteBatchedStatements=true&profileSQL=true&logger=Slf4JLogger&maxQuerySizeToLog=999999
     username: root
     password: 1234
