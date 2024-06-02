@@ -25,10 +25,16 @@ public class CouponCreatedConsumer {
     log.info("createDateTime = {}, userId = {}", LocalDateTime.now(), userId);
 
     try {
-      couponRepository.save(Coupon.builder()
-        .userId(userId).build());
+      if (userId % 2 == 0) {
+        couponRepository.save(Coupon.builder()
+          .userId(userId).build());
+      } else {
+        throw new RuntimeException();
+      }
     } catch (Exception e) {
       log.error("failed to create coupon, userId = {}", userId);
+      // 쿠폰 발행과 발행 신청이 디커플링 되어 있기 때문에 쿠폰 발급 실패 시
+      // FailedEvent 에 저장하여 장애에 대응할 수 있도록 함
       failedEventRepository.save(FailedEvent.builder()
         .userId(userId).build());
     }
