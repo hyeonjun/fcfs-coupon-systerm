@@ -74,9 +74,9 @@ class CouponServiceTest {
 
     latch.await();
 
-    // kafka consumer 가 데이터를 받아 실제 db에 저장하기까지 시간이 걸리기 때문에
-    // 넉넉하게 10초 정도 기다린 후 개수를 확인한다.
-    Thread.sleep(10000L);
+    // kafka consumer 가 데이터를 받아 실제 db에 저장하기까지 시간이 걸린다.
+    // 또한, 실패한 쿠폰 발행에 대해 대응하기 위해 스케쥴링의 시간까지 1분 30초 정도 기다린 후 개수를 확인한다.
+    Thread.sleep(90000L);
 
     long count = couponRepository.count();
 
@@ -106,9 +106,9 @@ class CouponServiceTest {
 
     latch.await();
 
-    // kafka consumer 가 데이터를 받아 실제 db에 저장하기까지 시간이 걸리기 때문에
-    // 넉넉하게 10초 정도 기다린 후 개수를 확인한다.
-    Thread.sleep(10000L);
+    // kafka consumer 가 데이터를 받아 실제 db에 저장하기까지 시간이 걸린다.
+    // 또한, 실패한 쿠폰 발행에 대해 대응하기 위해 스케쥴링의 시간까지 1분 30초 정도 기다린 후 개수를 확인한다.
+    Thread.sleep(90000L);
 
     long count = couponRepository.count();
 
